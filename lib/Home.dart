@@ -3,6 +3,7 @@ import 'package:youtube_app/telas/Inicio.dart';
 import 'package:youtube_app/telas/EmAlta.dart';
 import 'package:youtube_app/telas/Inscricoes.dart';
 import 'package:youtube_app/telas/Biblioteca.dart';
+import 'package:youtube_app/CustomSearchDelegate.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -14,12 +15,15 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
 
   int _indiceAtual = 0;
+  String _resultado = "";
 
   @override
   Widget build(BuildContext context) {
 
+
+
     List telas = [
-      Inicio(),
+      Inicio(_resultado),
       EmAlta(),
       Inscricoes(),
       Biblioteca(),
@@ -39,17 +43,28 @@ class _HomeState extends State<Home> {
         ),
         actions: [
           IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () async {
+              String? res = await showSearch(
+                  context: context,
+                  delegate: CustomSearchDelegate(),
+              );
+              setState(() {
+                _resultado = res!;
+              });
+              //print("Resultado: Digitado " + res!);
+            },
+          ),
+          /*
+          //  Botos do youtube. Sem atribuicao neste projeto
+          IconButton(
               onPressed: (){print("acao: videocam");},
               icon: Icon(Icons.videocam),
           ),
         IconButton(
-            onPressed: (){print("acao: pesquisa");},
-            icon: Icon(Icons.search),
-        ),
-        IconButton(
             onPressed: (){print("acao: conta");},
             icon: Icon(Icons.account_circle),
-    )
+        )*/
         ],
       ),
       body: Container(
