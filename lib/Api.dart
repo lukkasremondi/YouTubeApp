@@ -1,33 +1,63 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:youtube_app/model/Video.dart';
+
 const CHAVE_YOUTUBE_API = "AIzaSyAi7bNfizb-y7VBX0lkJ5_Gn5OUkpWRQzs";
 const ID_CANAL = "UCVHFbqXqoYvEWM1Ddxl0QDg";
 const URL_BASE = "https://www.googleapis.com/youtube/v3/";
 
 class Api {
-  pesquisar (String pesquisa) async {
+
+  /*A interroacao utilizada apos o list foi tulizada para informar que a lista
+  podera ser nula
+   */
+  Future<List<Video>>? pesquisar (String pesquisa) async {
     http.Response response = await http.get(Uri.parse(
-      URL_BASE + "search"
-          "?part=snippet"
-          "&type=video"
-          "&maxResults=20"
-          "&order=date"
-          "&key=$CHAVE_YOUTUBE_API"
-          //PARAMETRO ABAIXO PODE SER REMOVIDO PARA RETORNAR TODOS OS VIDEOS DO YT
-          "&channelId=$ID_CANAL"
-          "&q=$pesquisa"
+        URL_BASE + "search"
+            "?part=snippet"
+            "&type=video"
+            "&maxResults=20"
+            "&order=date"
+            "&key=$CHAVE_YOUTUBE_API"
+        //PARAMETRO ABAIXO PODE SER ALTERADO PARA RETORNAR OS VIDEOS DESEJADOS DO YT
+            "&channelId=$ID_CANAL"
+            "&q=$pesquisa"
     )
     );
 
-    if(response.statusCode == 200){
+    if( response.statusCode == 200 ){
 
-      Map<String, dynamic> dadosJson = json.decode( response.body);
-      print(dadosJson["items"][0]["snippet"]["title"].toString());
-    }
-    else{
+
+      Map<String, dynamic> dadosJson = json.decode( response.body );
+
+      List<Video> videos = dadosJson["items"].map<Video>(
+              (map){
+            return Video.fromJson(map);
+            //return Video.converterJson(map);
+          }
+      ).toList();
+
+      return videos;
+
+      /*for( var video in videos ){
+        print("resultado: " + video.titulo! );
+      }*/
+      //print("Resultado: " + videos.toString() );
+
+      /*
+      for( var video in dadosJson["items"] ){
+        print("Resultado: " + video.toString() );
+      }*/
+      //print("resultado: " + dadosJson["items"].toString() );
+
+    }else{
+
+      print("Status: " + response.statusCode.toString());
 
     }
 
   }
+
 }
+
